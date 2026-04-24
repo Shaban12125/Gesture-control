@@ -1,0 +1,37 @@
+#include <Wire.h>
+#include <MPU6050.h>
+#include <SoftwareSerial.h>
+
+MPU6050 mpu;
+SoftwareSerial BT(2, 3); // RX, TX
+
+void setup() {
+  Serial.begin(9600);
+  BT.begin(9600);
+  Wire.begin();
+  mpu.initialize();
+}
+
+void loop() {
+  int16_t ax, ay, az;
+  mpu.getAcceleration(&ax, &ay, &az);
+
+  // Gesture conditions
+  if (ay < -15000) {
+    BT.write('F'); // Forward
+  } 
+  else if (ay > 15000) {
+    BT.write('B'); // Backward
+  } 
+  else if (ax < -15000) {
+    BT.write('L'); // Left
+  } 
+  else if (ax > 15000) {
+    BT.write('R'); // Right
+  } 
+  else {
+    BT.write('S'); // Stop
+  }
+
+  delay(200);
+}
